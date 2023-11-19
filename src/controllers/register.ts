@@ -8,6 +8,7 @@ export const register= async(req: Request, res: Response)=> {
     const { fullname, email, password } = req.body;
 
     try {
+      if(!fullname || !email || !password ) return res.status(400).json({error: "please fill all fields"})
       // Check if the user already exists
       const existingUser = await prisma.user.findUnique({
         where: { email },
@@ -29,7 +30,11 @@ export const register= async(req: Request, res: Response)=> {
         },
       });
   
-      res.json(newUser);
+      res.status(200).json({
+        id: newUser.id,
+        fullname: newUser.fullname,
+        email: newUser.email
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal server error' });
