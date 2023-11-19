@@ -6,6 +6,6 @@ const router = Router()
 
 router.post('/signup', register)
 
-router.post('/', signin)
+router.post('/signin', signin)
 
 export default router

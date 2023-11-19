@@ -1,15 +1,16 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import dotenv from 'dotenv'
 
+dotenv.config()
 const prisma = new PrismaClient();
 const key_secret = process.env.secret_key;
 
 export const signin = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   const { email, password } = req.body;
 
@@ -45,8 +46,6 @@ export const signin = async (
           );
         });
       });
-
-    next();
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
