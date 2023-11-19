@@ -19,6 +19,8 @@ const prisma = new client_1.PrismaClient();
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fullname, email, password } = req.body;
     try {
+        if (!fullname || !email || !password)
+            return res.status(400).json({ error: "please fill all fields" });
         // Check if the user already exists
         const existingUser = yield prisma.user.findUnique({
             where: { email },
@@ -36,7 +38,11 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 password: hashedPassword,
             },
         });
-        res.json(newUser);
+        res.status(200).json({
+            id: newUser.id,
+            fullname: newUser.fullname,
+            email: newUser.email
+        });
     }
     catch (error) {
         console.error(error);
