@@ -16,9 +16,11 @@ exports.signin = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const client_1 = require("@prisma/client");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const prisma = new client_1.PrismaClient();
 const key_secret = process.env.secret_key;
-const signin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const signin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
         if (!email || !password)
@@ -47,7 +49,6 @@ const signin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
                 });
             });
         });
-        next();
     }
     catch (error) {
         console.error(error);
