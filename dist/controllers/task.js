@@ -13,10 +13,11 @@ exports.updateTask = exports.getAllTasks = exports.createTask = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const createTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const { content } = req.body;
-    const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+    const userId = parseInt(req.params.userId);
     try {
+        if (!content)
+            return res.status(400).json({ error: "content can not be empty" });
         const task = yield prisma.task.create({
             data: {
                 content,
@@ -33,8 +34,7 @@ const createTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.createTask = createTask;
 const getAllTasks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
-    const userId = (_b = req.user) === null || _b === void 0 ? void 0 : _b.id;
+    const userId = parseInt(req.params.taskId);
     try {
         const tasks = yield prisma.task.findMany({
             where: {
@@ -50,9 +50,7 @@ const getAllTasks = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.getAllTasks = getAllTasks;
 const updateTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c;
     const taskId = req.params.taskId;
-    const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.id;
     const { isCompleted } = req.body;
     try {
         const existingTask = yield prisma.task.findUnique({
@@ -60,7 +58,7 @@ const updateTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 id: parseInt(taskId),
             },
         });
-        if (!existingTask || existingTask.userId !== userId) {
+        if (!existingTask) {
             return res.status(404).json({ error: "Task not found" });
         }
         const updatedTask = yield prisma.task.update({
