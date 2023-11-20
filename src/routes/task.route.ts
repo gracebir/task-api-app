@@ -4,7 +4,7 @@ import { createTask, getAllTasks, updateTask } from "../controllers/task";
 
 const router = Router()
 
-router.post('/create', authorization, createTask)
+router.post('/create/:userId', authorization, createTask)
 
 router.get('/:taskId', authorization, getAllTasks)
 
