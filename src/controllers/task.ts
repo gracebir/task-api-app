@@ -3,15 +3,12 @@ import { Response, Request } from "express";
 
 const prisma = new PrismaClient();
 
-interface CustomRequest extends Request {
-  user?: any; // Change 'any' to the actual type of your user object if available
-}
-
-export const createTask = async (req: CustomRequest, res: Response) => {
+export const createTask = async (req: Request, res: Response) => {
   const { content } = req.body;
-  const userId = req.user?.id;
-
+  const userId = parseInt(req.params.userId);
+    
   try {
+    if(!content) return res.status(400).json({error: "content can not be empty"})
     const task = await prisma.task.create({
       data: {
         content,
@@ -27,8 +24,8 @@ export const createTask = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const getAllTasks = async (req: CustomRequest, res: Response) => {
-  const userId = req.user?.id;
+export const getAllTasks = async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.taskId);
 
   try {
     const tasks = await prisma.task.findMany({
@@ -44,9 +41,9 @@ export const getAllTasks = async (req: CustomRequest, res: Response) => {
   }
 };
 
-export const updateTask = async (req: CustomRequest, res: Response) => {
+export const updateTask = async (req: Request, res: Response) => {
   const taskId = req.params.taskId;
-  const userId = req.user?.id;
+
   const { isCompleted } = req.body;
 
   try {
@@ -56,7 +53,7 @@ export const updateTask = async (req: CustomRequest, res: Response) => {
       },
     });
 
-    if (!existingTask || existingTask.userId !== userId) {
+    if (!existingTask) {
       return res.status(404).json({ error: "Task not found" });
     }
 
